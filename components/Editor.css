@@ -1,0 +1,13 @@
+
+  .editor-container{
+    position: relative;
+  }
+  .medium-editor-element{
+    height: 100vh;
+    margin: 1rem;
+    border: none;
+    
+  }
+  .medium-editor-element:focus{
+    outline: none !important;
+  }
