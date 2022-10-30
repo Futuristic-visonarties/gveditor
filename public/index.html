@@ -17,10 +17,9 @@
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
 
     <script type="text/javascript">
-      function test(){
-        alert('Function from index.html');
+      function test() {
+        alert("Function from index.html");
       }
-  
     </script>
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
@@ -36,19 +35,20 @@
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    
+
     <script type="text/javascript">
-      function test(){
-        alert('Function from index.html');
+      function test() {
+        alert("Function from index.html");
       }
       function loadWithInitalContent(data) {
-           console.log('jsonData =' , data);
-           alert(data)
-           let jsonData = JSON.parse(data);
-          window.initial_data = jsonData
-
-       }
-     
+        // let jsonData = JSON.parse(data);
+        // window.initial_data = jsonData;
+        const event = new CustomEvent("changeContent", {
+          detail: data,
+        });
+        window.dispatchEvent(event);
+        // window.dispatchEvent
+      }
     </script>
     <!--
       This HTML file is a template.

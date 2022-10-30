@@ -1,4 +1,3 @@
-import logo from "./logo.svg";
 import * as React from "react";
 import "./App.css";
 import axiosConfig from "./network/network";
@@ -7,66 +6,95 @@ import { RingLoader } from "react-spinners";
 import axios from "axios";
 
 function App() {
-  const [editor, setEditor] = React.useState();
+  const [editor, _setEditor] = React.useState();
   const [loader, setLoader] = React.useState(false);
-  const [count, setCount] = React.useState(0);
+  const [debug, setDebug] = React.useState();
+  const myEditor = React.useRef(editor);
+  const { hideUpload } = Object.fromEntries(
+    new URLSearchParams(window.location.search)
+  );
+
+  const setMyEditor = (data) => {
+    console.log("seeting editor", data);
+    myEditor.current = data;
+    _setEditor(data);
+  };
+
   const picker = React.useRef();
-  const AddImage = React.useCallback(() => {
-    console.log("adding images");
-    // editor.setContent(`<img src='https://images.unsplash.com/photo-1659085095693-fcdc650d246c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwyfHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60'/>`)
-    let content = editor.getContent();
-    editor.setContent(
-      `${content}` +
-        `<img src='https://images.unsplash.com/photo-1659085095693-fcdc650d246c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwyfHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60'/>`
-    );
-  });
+
   const getUrl = () => {
     return axiosConfig
-      .get(`contribution/get-presigned-url/${count}/image`)
+      .get(`contribution/get-presigned-url/name.png/image`)
       .then((res) => {
         console.log("res from api", res);
         return res.data;
       })
       .catch((err) => {
-        console.log("error ", err);
+        // console.log("error ", err);
         return err;
       });
   };
-  const onImageChange = React.useCallback(async (event) => {
+  const getBlobFromUrl = (myImageUrl) => {
+    return new Promise((resolve, reject) => {
+      let request = new XMLHttpRequest();
+      request.open("GET", myImageUrl, true);
+      request.responseType = "blob";
+      request.onload = () => {
+        resolve(request.response);
+      };
+      request.onerror = reject;
+      request.send();
+    });
+  };
+
+  const onImageChange = async (event) => {
     setLoader(true);
-    var data = new FormData();
-    data.append("image", event.target.files[0]);
+    let url = URL.createObjectURL(event.target.files[0]);
+    let image = await getBlobFromUrl(url);
     let uRes = await getUrl();
-    console.log("usres ures ures", uRes);
     if (uRes.data.signedURL) {
-      console.log("upload image");
-      axios
-        .put(uRes.data.signedURL, data)
+      axios({
+        method: "put",
+        url: uRes.data.signedURL,
+        data: image,
+      })
         .then((url) => {
-          // use the response from url to add as image
           setLoader(false);
-          let content = editor.getContent();
-          editor.setContent(`${content}` + `<img src=${uRes.data.s3URL}/>`);
+          editor.pasteHTML(`<img src=${uRes.data.s3URL}  > </img>`);
         })
         .catch((err) => {
-          console.log("error from upload s3", err);
           setLoader(false);
         });
+    } else {
+      setLoader(false);
     }
+  };
+
+  React.useEffect(() => {
+    window.addEventListener("changeContent", (data) => {
+      if (myEditor) {
+        setDebug(data.detail);
+        myEditor.current.setContent(`<p>${data.detail}</p>`);
+      } else {
+        console.log("no editor ");
+        setTimeout(() => {
+          const event = new CustomEvent("changeContent", {
+            data: data,
+          });
+          window.dispatchEvent(event);
+        }, 1000);
+      }
+    });
   });
   React.useEffect(() => {
     if (editor) {
-      if (window.initial_data) {
-        editor.setContent(window.initial_data?.htmlStr);
-      }
       editor.subscribe("editableInput", function (event, editable) {
-        // your custom save code
         try {
           window.webkit.messageHandlers.doneEditing.postMessage({
             htmlString: editor.getContent(),
           });
         } catch (err) {
-          console.log("error");
+          // console.log("error sending data", err);
         }
       });
     }
@@ -81,8 +109,7 @@ function App() {
         type="file"
         onChange={onImageChange}
       />
-
-      <Editor editor={editor} setEditor={setEditor} />
+      <Editor editor={editor} setEditor={setMyEditor} />
       <img
         alt=""
         className="close-icon"
@@ -93,16 +120,17 @@ function App() {
           });
         }}
       />
-
-      <img
-        alt=""
-        className="imgupload"
-        src="https://img.icons8.com/ios-glyphs/30/000000/image.png"
-        onClick={(e) => {
-          e.preventDefault();
-          picker.current.click();
-        }}
-      />
+      {!hideUpload && (
+        <img
+          alt=""
+          className="imgupload"
+          src="https://img.icons8.com/ios-glyphs/30/000000/image.png"
+          onClick={(e) => {
+            e.preventDefault();
+            picker.current.click();
+          }}
+        />
+      )}
 
       {loader && <RingLoader className="loader" color={"#ADD8E6"} size={50} />}
     </div>
