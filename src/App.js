@@ -30,7 +30,7 @@ function App() {
         return res.data;
       })
       .catch((err) => {
-        // console.log("error ", err);
+        setLoader(false);
         return err;
       });
   };
@@ -73,8 +73,7 @@ function App() {
   React.useEffect(() => {
     window.addEventListener("changeContent", (data) => {
       if (myEditor) {
-        setDebug(data.detail);
-        myEditor.current.setContent(`<p>${data.detail}</p>`);
+        myEditor.current.setContent(`${data.detail}`);
       } else {
         console.log("no editor ");
         setTimeout(() => {
@@ -97,6 +96,11 @@ function App() {
           // console.log("error sending data", err);
         }
       });
+      editor.subscribe("focus", function (event, editable) {
+        window.webkit.messageHandlers.onfocus.postMessage({
+          focus: true,
+        });
+      });
     }
   }, [editor]);
 
@@ -110,7 +114,7 @@ function App() {
         onChange={onImageChange}
       />
       <Editor editor={editor} setEditor={setMyEditor} />
-      <img
+      {/* <img
         alt=""
         className="close-icon"
         src="https://img.icons8.com/external-jumpicon-glyph-ayub-irawan/32/000000/external-arrows-arrows-jumpicon-glyph-jumpicon-glyph-ayub-irawan-3.png"
@@ -119,8 +123,8 @@ function App() {
             htmlString: editor.getContent(),
           });
         }}
-      />
-      {!hideUpload && (
+      /> */}
+      {hideUpload === undefined ? (
         <img
           alt=""
           className="imgupload"
@@ -130,7 +134,7 @@ function App() {
             picker.current.click();
           }}
         />
-      )}
+      ) : null}
 
       {loader && <RingLoader className="loader" color={"#ADD8E6"} size={50} />}
     </div>
