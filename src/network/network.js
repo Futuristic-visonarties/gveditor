@@ -1,6 +1,6 @@
 import axios from "axios";
 // const BASE = process.env.CONFIG_API;
-const BASE = "http://44.208.4.107/";
+const BASE = "https://api-py.glocalvoice.in/";
 
 const axiosInstance = axios.create({
   baseURL: BASE,
