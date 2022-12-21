@@ -92,8 +92,9 @@ function App() {
           window.webkit.messageHandlers.doneEditing.postMessage({
             htmlString: editor.getContent(),
           });
+          JSBridge.doneEditing(valueReceived);
         } catch (err) {
-          // console.log("error sending data", err);
+          console.log("error sending data", err);
         }
       });
       editor.subscribe("focus", function (event, editable) {
