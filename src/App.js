@@ -8,9 +8,9 @@ import axios from "axios";
 function App() {
   const [editor, _setEditor] = React.useState();
   const [loader, setLoader] = React.useState(false);
-  const [debug, setDebug] = React.useState();
+  // const [debug, setDebug] = React.useState("initla state");
   const myEditor = React.useRef(editor);
-  const { hideUpload } = Object.fromEntries(
+  const { hideUpload, type } = Object.fromEntries(
     new URLSearchParams(window.location.search)
   );
 
@@ -22,11 +22,16 @@ function App() {
 
   const picker = React.useRef();
 
-  const getUrl = () => {
+  const getUrl = (imageType) => {
+    let uniqueId =
+      Date.now().toString(36) + Math.random().toString(36).substring(2);
+
+    let url = `contribution/get-presigned-url/${uniqueId}.${imageType}/image`;
+    console.log("url genera", url);
+
     return axiosConfig
-      .get(`contribution/get-presigned-url/name.png/image`)
+      .get(url)
       .then((res) => {
-        console.log("res from api", res);
         return res.data;
       })
       .catch((err) => {
@@ -51,16 +56,20 @@ function App() {
     setLoader(true);
     let url = URL.createObjectURL(event.target.files[0]);
     let image = await getBlobFromUrl(url);
-    let uRes = await getUrl();
+    uploadImage(image);
+  };
+  const uploadImage = async (image, imageType) => {
+    let uRes = await getUrl(imageType);
+
     if (uRes.data.signedURL) {
       axios({
         method: "put",
         url: uRes.data.signedURL,
         data: image,
       })
-        .then((url) => {
+        .then(() => {
           setLoader(false);
-          editor.pasteHTML(`<img src=${uRes.data.s3URL}  > </img>`);
+          editor.pasteHTML(`<br /> <img src=${uRes.data.s3URL}  > </img>`);
         })
         .catch((err) => {
           setLoader(false);
@@ -69,38 +78,63 @@ function App() {
       setLoader(false);
     }
   };
+  const changeContentHandler = (data) => {
+    if (myEditor) {
+      myEditor.current.setContent(`${data.detail}`);
+    } else {
+      setTimeout(() => {
+        const event = new CustomEvent("changeContent", {
+          data: data,
+        });
+        window.dispatchEvent(event);
+      }, 1000);
+    }
+  };
+  const changeUploadImageHandler = () => {
+    let type = data.detail.substring(
+      "data:image/".length,
+      data.detail.indexOf(";base64")
+    );
+    fetch(data.detail)
+      .then((res) => res.blob())
+      .then((image) => uploadImage(image, type))
+      .catch((err) => {
+        console.log("error in getting src ");
+        console.log(err);
+      });
+  };
 
   React.useEffect(() => {
-    window.addEventListener("changeContent", (data) => {
-      if (myEditor) {
-        myEditor.current.setContent(`${data.detail}`);
-      } else {
-        console.log("no editor ");
-        setTimeout(() => {
-          const event = new CustomEvent("changeContent", {
-            data: data,
-          });
-          window.dispatchEvent(event);
-        }, 1000);
-      }
-    });
-  });
+    window.addEventListener("changeContent", changeContentHandler);
+    window.addEventListener("uploadImageData", changeUploadImageHandler);
+
+    return () => {
+      window.removeEventListener("uploadImageData", changeUploadImageHandler);
+      window.removeEventListener("changeContent", changeContentHandler);
+    };
+  }, []);
   React.useEffect(() => {
     if (editor) {
       editor.subscribe("editableInput", function (event, editable) {
         try {
-          window.webkit.messageHandlers.doneEditing.postMessage({
-            htmlString: editor.getContent(),
-          });
-          JSBridge.doneEditing(valueReceived);
-        } catch (err) {
-          console.log("error sending data", err);
-        }
+          if (type == "ios") {
+            window.webkit.messageHandlers.doneEditing.postMessage({
+              htmlString: editor.getContent(),
+            });
+          }
+
+          if (type == "android") {
+            //@ts-ignore
+            JSBridge.doneEditing(editor.getContent());
+          }
+        } catch (err) {}
       });
       editor.subscribe("focus", function (event, editable) {
-        window.webkit.messageHandlers.onfocus.postMessage({
-          focus: true,
-        });
+        if (type == "ios") {
+          window.webkit.messageHandlers.onfocus.postMessage({
+            focus: true,
+          });
+        }
       });
     }
   }, [editor]);
@@ -131,8 +165,15 @@ function App() {
           className="imgupload"
           src="https://img.icons8.com/ios-glyphs/30/000000/image.png"
           onClick={(e) => {
-            e.preventDefault();
-            picker.current.click();
+            if (type == "android") {
+              //@ts-ignore
+              try {
+                JSBridge.choosePhoto();
+              } catch (e) {}
+            } else {
+              e.preventDefault();
+              picker.current.click();
+            }
           }}
         />
       ) : null}

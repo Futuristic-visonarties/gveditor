@@ -2,10 +2,14 @@ import axios from "axios";
 // const BASE = process.env.CONFIG_API;
 const BASE = "https://api-py.glocalvoice.in/";
 
+const { hideUpload, type, token } = Object.fromEntries(
+  new URLSearchParams(window.location.search)
+);
+
 const axiosInstance = axios.create({
   baseURL: BASE,
   headers: {
-    Authorization: `Bearer ${window.location.search.split("token=")[1]}`,
+    Authorization: `Bearer ${token}`,
   },
 });
 

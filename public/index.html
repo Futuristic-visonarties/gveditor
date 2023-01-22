@@ -16,11 +16,7 @@
     -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
 
-    <script type="text/javascript">
-      function test() {
-        alert("Function from index.html");
-      }
-    </script>
+    <script type="text/javascript"></script>
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
@@ -37,17 +33,19 @@
     <div id="root"></div>
 
     <script type="text/javascript">
-      function test() {
-        alert("Function from index.html");
-      }
       function loadWithInitalContent(data) {
-        // let jsonData = JSON.parse(data);
-        // window.initial_data = jsonData;
         const event = new CustomEvent("changeContent", {
           detail: data,
         });
         window.dispatchEvent(event);
-        // window.dispatchEvent
+      }
+      function uploadImage(data) {
+        console.log("cuploadImage in html");
+
+        const event = new CustomEvent("uploadImageData", {
+          detail: data,
+        });
+        window.dispatchEvent(event);
       }
     </script>
     <!--
