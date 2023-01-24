@@ -15,7 +15,6 @@ function App() {
   );
 
   const setMyEditor = (data) => {
-    console.log("seeting editor", data);
     myEditor.current = data;
     _setEditor(data);
   };
@@ -27,7 +26,6 @@ function App() {
       Date.now().toString(36) + Math.random().toString(36).substring(2);
 
     let url = `contribution/get-presigned-url/${uniqueId}.${imageType}/image`;
-    console.log("url genera", url);
 
     return axiosConfig
       .get(url)
@@ -99,7 +97,6 @@ function App() {
       .then((res) => res.blob())
       .then((image) => uploadImage(image, type))
       .catch((err) => {
-        console.log("error in getting src ");
         console.log(err);
       });
   };
