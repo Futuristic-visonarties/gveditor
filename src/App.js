@@ -14,6 +14,10 @@ function App() {
     new URLSearchParams(window.location.search)
   );
 
+  if (type !== "android") {
+    var JSBridge;
+  }
+
   const setMyEditor = (data) => {
     myEditor.current = data;
     _setEditor(data);
@@ -88,7 +92,7 @@ function App() {
       }, 1000);
     }
   };
-  const changeUploadImageHandler = () => {
+  const changeUploadImageHandler = (data) => {
     let type = data.detail.substring(
       "data:image/".length,
       data.detail.indexOf(";base64")
@@ -121,8 +125,8 @@ function App() {
           }
 
           if (type == "android") {
-            //@ts-ignore
-            JSBridge.doneEditing(editor.getContent());
+            //@ts-nocheck
+            JSBridge?.doneEditing(editor.getContent());
           }
         } catch (err) {}
       });
@@ -163,9 +167,9 @@ function App() {
           src="https://img.icons8.com/ios-glyphs/30/000000/image.png"
           onClick={(e) => {
             if (type == "android") {
-              //@ts-ignore
               try {
-                JSBridge.choosePhoto();
+                //@ts-nocheck
+                JSBridge?.choosePhoto();
               } catch (e) {}
             } else {
               e.preventDefault();
