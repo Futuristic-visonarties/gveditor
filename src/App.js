@@ -14,9 +14,9 @@ function App() {
     new URLSearchParams(window.location.search)
   );
 
-  if (type !== "android") {
-    var JSBridge;
-  }
+  // if (type !== "android") {
+  //   var JSBridge;
+  // }
 
   const setMyEditor = (data) => {
     myEditor.current = data;
@@ -71,7 +71,7 @@ function App() {
       })
         .then(() => {
           setLoader(false);
-          editor.pasteHTML(`<br /> <img src=${uRes.data.s3URL}  > </img>`);
+          myEditor.current.pasteHTML(`<img src=${uRes.data.s3URL}> </img>`);
         })
         .catch((err) => {
           setLoader(false);
@@ -125,7 +125,7 @@ function App() {
           }
 
           if (type == "android") {
-            //@ts-nocheck
+            /* eslint-disable */
             JSBridge?.doneEditing(editor.getContent());
           }
         } catch (err) {}
@@ -168,7 +168,7 @@ function App() {
           onClick={(e) => {
             if (type == "android") {
               try {
-                //@ts-nocheck
+                /* eslint-disable */
                 JSBridge?.choosePhoto();
               } catch (e) {}
             } else {
