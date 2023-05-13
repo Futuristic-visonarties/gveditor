@@ -128,6 +128,18 @@ function App() {
             /* eslint-disable */
             JSBridge?.doneEditing(editor.getContent());
           }
+          if (type == "web") {
+            if (window && window.parent) {
+              window.parent.postMessage(
+                {
+                  message: editor.getContent(),
+                  hide: "dbhchat",
+                  show: "dbhchat",
+                },
+                "*"
+              );
+            }
+          }
         } catch (err) {}
       });
       editor.subscribe("focus", function (event, editable) {
