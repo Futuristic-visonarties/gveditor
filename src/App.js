@@ -133,8 +133,6 @@ function App() {
               window.parent.postMessage(
                 {
                   message: editor.getContent(),
-                  hide: "dbhchat",
-                  show: "dbhchat",
                 },
                 "*"
               );
