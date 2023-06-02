@@ -40,7 +40,6 @@
         window.dispatchEvent(event);
       }
       function uploadImage(data) {
-        console.log("uploading image in html");
         const event = new CustomEvent("uploadImageData", {
           detail: data,
         });

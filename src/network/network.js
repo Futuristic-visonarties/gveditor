@@ -2,21 +2,21 @@ import axios from "axios";
 // const BASE = process.env.CONFIG_API;
 const BASE = "https://api-py.glocalvoice.in/";
 
-const { hideUpload, type, token } = Object.fromEntries(
+const { type, token } = Object.fromEntries(
   new URLSearchParams(window.location.search)
 );
+
+var webtoken = null;
 
 const axiosInstance = axios.create({
   baseURL: BASE,
   headers: {
-    Authorization: `Bearer ${token}`,
+    Authorization: `Bearer ${type ? token : webtoken}`,
   },
 });
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    console.log("requestion", config);
-    console.log(localStorage.getItem("Token"));
     return config;
   },
   (error) => {

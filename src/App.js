@@ -71,7 +71,9 @@ function App() {
       })
         .then(() => {
           setLoader(false);
-          myEditor.current.pasteHTML(`<img src=${uRes.data.s3URL}> </img>`);
+          myEditor.current.pasteHTML(
+            `<img name=${uRes.data.media_temp_id} src=${uRes.data.s3URL}> </img>`
+          );
         })
         .catch((err) => {
           setLoader(false);
@@ -128,7 +130,8 @@ function App() {
             /* eslint-disable */
             JSBridge?.doneEditing(editor.getContent());
           }
-          if (type == "web") {
+
+          if (!type) {
             if (window && window.parent) {
               window.parent.postMessage(
                 {
