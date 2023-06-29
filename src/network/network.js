@@ -6,8 +6,6 @@ const { type, token } = Object.fromEntries(
   new URLSearchParams(window.location.search)
 );
 
-var webtoken = null;
-
 const axiosInstance = axios.create({
   baseURL: BASE,
   headers: {
