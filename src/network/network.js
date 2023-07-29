@@ -9,7 +9,7 @@ const { type, token } = Object.fromEntries(
 const axiosInstance = axios.create({
   baseURL: BASE,
   headers: {
-    Authorization: `Bearer ${type ? token : webtoken}`,
+    Authorization: `Bearer ${type ? token : window.webtoken}`,
   },
 });
 
