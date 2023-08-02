@@ -3,11 +3,15 @@ import "./App.css";
 import axiosConfig from "./network/network";
 import Editor from "./components/Editor";
 import { RingLoader } from "react-spinners";
+import ProgressBar from "@ramonak/react-progress-bar";
+
 import axios from "axios";
 
 function App() {
   const [editor, _setEditor] = React.useState();
   const [loader, setLoader] = React.useState(false);
+  const [percentage, setPercentage] = React.useState(0);
+
   // const [debug, setDebug] = React.useState("initla state");
   const myEditor = React.useRef(editor);
   const { hideUpload, type } = Object.fromEntries(
@@ -68,6 +72,10 @@ function App() {
         method: "put",
         url: uRes.data.signedURL,
         data: image,
+        onUploadProgress: (progressEvent) => {
+          let percentComplete = progressEvent.loaded / progressEvent.total;
+          setPercentage(parseInt(percentComplete * 100));
+        },
       })
         .then(() => {
           setLoader(false);
@@ -121,9 +129,9 @@ function App() {
       editor.subscribe("editableInput", function (event, editable) {
         try {
           if (type == "ios") {
-            window.webkit.messageHandlers.doneEditing.postMessage({
-              htmlString: editor.getContent(),
-            });
+            // window.webkit.messageHandlers.doneEditing.postMessage({
+            //   htmlString: editor.getContent(),
+            // });
           }
 
           if (type == "android") {
@@ -145,9 +153,9 @@ function App() {
       });
       editor.subscribe("focus", function (event, editable) {
         if (type == "ios") {
-          window.webkit.messageHandlers.onfocus.postMessage({
-            focus: true,
-          });
+          // window.webkit.messageHandlers.onfocus.postMessage({
+          //   focus: true,
+          // });
         }
       });
     }
@@ -192,7 +200,7 @@ function App() {
         />
       ) : null}
 
-      {loader && <RingLoader className="loader" color={"#ADD8E6"} size={50} />}
+      {loader && <ProgressBar className="loader" completed={percentage} />}
     </div>
   );
 }

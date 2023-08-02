@@ -28,8 +28,9 @@
 }
 .loader {
   position: absolute !important;
+  width: 60%;
   top: 50%;
-  left: 50%;
+  left: 25%;
 }
 
 .medium-editor-element {
@@ -39,6 +40,8 @@
 img {
   margin: auto;
   align-self: center;
+  max-width: 100%;
+  max-height: 600px;
 }
 
 html {
