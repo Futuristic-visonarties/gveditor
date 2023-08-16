@@ -4,8 +4,8 @@ import axiosConfig from "./network/network";
 import Editor from "./components/Editor";
 import { RingLoader } from "react-spinners";
 import ProgressBar from "@ramonak/react-progress-bar";
-
 import axios from "axios";
+import { Helmet } from "react-helmet";
 
 function App() {
   const [editor, _setEditor] = React.useState();
@@ -25,6 +25,7 @@ function App() {
   const setMyEditor = (data) => {
     myEditor.current = data;
     _setEditor(data);
+    data.elements[0].focus();
   };
 
   const picker = React.useRef();
@@ -59,6 +60,7 @@ function App() {
   };
 
   const onImageChange = async (event) => {
+    if (event.target.files.length == 0) return;
     setLoader(true);
     let url = URL.createObjectURL(event.target.files[0]);
     let image = await getBlobFromUrl(url);
@@ -162,7 +164,18 @@ function App() {
   }, [editor]);
 
   return (
-    <div className="App">
+    <div
+      style={
+        loader ? { pointerEvents: "none", backgroundColor: "#cccccc45" } : {}
+      }
+      className="App"
+    >
+      <Helmet>
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+        />
+      </Helmet>
       <input
         ref={picker}
         accept="image"
