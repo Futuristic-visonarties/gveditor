@@ -82,6 +82,7 @@ function App() {
       })
         .then(() => {
           setLoader(false);
+          setPercentage(0);
           myEditor.current.pasteHTML(
             `<img name=${uRes.data.media_temp_id} src=${uRes.data.s3URL}> </img>`
           );
