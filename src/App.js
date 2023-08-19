@@ -6,6 +6,7 @@ import { RingLoader } from "react-spinners";
 import ProgressBar from "@ramonak/react-progress-bar";
 import axios from "axios";
 import { Helmet } from "react-helmet";
+import { getLengthOfContentExcludingTags } from "./util";
 
 function App() {
   const [editor, _setEditor] = React.useState();
@@ -130,22 +131,36 @@ function App() {
     if (editor) {
       editor.subscribe("editableInput", function (event, editable) {
         try {
+          let content = editor.getContent();
+          let contentLength = getLengthOfContentExcludingTags(content);
+
           if (type == "ios") {
-            // window.webkit.messageHandlers.doneEditing.postMessage({
-            //   htmlString: editor.getContent(),
-            // });
+            window.webkit.messageHandlers.doneEditing.postMessage({
+              htmlString: content,
+            });
+
+            window.webkit.messageHandlers.contentLength.postMessage({
+              count: contentLength,
+            });
           }
 
           if (type == "android") {
             /* eslint-disable */
-            JSBridge?.doneEditing(editor.getContent());
+            JSBridge?.doneEditing(content);
+            JSBridge?.contentLength(contentLength);
           }
 
           if (!type) {
             if (window && window.parent) {
               window.parent.postMessage(
                 {
-                  message: editor.getContent(),
+                  message: content,
+                },
+                "*"
+              );
+              window.parent.postMessage(
+                {
+                  contentLength: contentLength,
                 },
                 "*"
               );
