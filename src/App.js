@@ -64,6 +64,7 @@ function App() {
     if (event.target.files.length == 0) return;
     setLoader(true);
     let url = URL.createObjectURL(event.target.files[0]);
+    picker.current.value = "";
     let image = await getBlobFromUrl(url);
     uploadImage(image);
   };
