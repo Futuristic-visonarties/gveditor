@@ -4,8 +4,6 @@ import "medium-editor/dist/css/medium-editor.css";
 import "medium-editor/dist/css/themes/default.css";
 import "./Editor.css";
 const Article = ({ editor, setEditor }) => {
-  // const [editor, setEditor] = React.useState();
-
   const onRefChange = React.useCallback((node) => {
     if (node === null) {
       setEditor(null);
@@ -14,9 +12,10 @@ const Article = ({ editor, setEditor }) => {
         const et = new MediumEditor(node, {
           placeholder: {
             text: "\n Enter your content",
-            hideOnClick: true,
+            hideOnClick: false,
           },
         });
+        node.scrollTop = 0;
         setEditor(et);
       }
     }

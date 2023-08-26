@@ -7,7 +7,7 @@ import ProgressBar from "@ramonak/react-progress-bar";
 import axios from "axios";
 import { Helmet } from "react-helmet";
 import { getLengthOfContentExcludingTags } from "./util";
-
+import uploadIcon from "./asset/uploadIcon.svg";
 function App() {
   const [editor, _setEditor] = React.useState();
   const [loader, setLoader] = React.useState(false);
@@ -210,7 +210,7 @@ function App() {
         <img
           alt=""
           className="imgupload"
-          src="https://img.icons8.com/ios-glyphs/30/000000/image.png"
+          src={uploadIcon}
           onClick={(e) => {
             if (type == "android") {
               try {
