@@ -9,7 +9,7 @@ export const getLengthOfContentExcludingTags = (htmlString) => {
   const textContent = dom.body.textContent;
 
   // Calculate the length of the text content
-  const contentLength = textContent.length;
-
+  const contentLength = textContent.trim().length;
+  // todo remove white space
   return contentLength;
 };

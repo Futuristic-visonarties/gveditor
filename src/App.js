@@ -12,6 +12,7 @@ function App() {
   const [editor, _setEditor] = React.useState();
   const [loader, setLoader] = React.useState(false);
   const [percentage, setPercentage] = React.useState(0);
+  const [length, setLength] = React.useState(0);
 
   // const [debug, setDebug] = React.useState("initla state");
   const myEditor = React.useRef(editor);
@@ -135,6 +136,7 @@ function App() {
         try {
           let content = editor.getContent();
           let contentLength = getLengthOfContentExcludingTags(content);
+          setLength(contentLength);
 
           if (type == "ios") {
             window.webkit.messageHandlers.doneEditing.postMessage({
@@ -145,11 +147,9 @@ function App() {
               count: contentLength,
             });
           }
-
           if (type == "android") {
             /* eslint-disable */
-            JSBridge?.doneEditing(content);
-            JSBridge?.contentLength(contentLength);
+            JSBridge?.doneEditing(content, contentLength);
           }
 
           if (!type) {
@@ -157,11 +157,6 @@ function App() {
               window.parent.postMessage(
                 {
                   message: content,
-                },
-                "*"
-              );
-              window.parent.postMessage(
-                {
                   contentLength: contentLength,
                 },
                 "*"
@@ -229,6 +224,7 @@ function App() {
           }}
         />
       ) : null}
+      <p className="txt-length"> {length}/500 </p>
 
       {loader && <ProgressBar className="loader" completed={percentage} />}
     </div>
