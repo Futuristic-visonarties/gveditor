@@ -8,6 +8,8 @@ import axios from "axios";
 import { Helmet } from "react-helmet";
 import { getLengthOfContentExcludingTags } from "./util";
 import uploadIcon from "./asset/uploadIcon.svg";
+import SvgComponent from "./components/uploadIcon";
+
 function App() {
   const [editor, _setEditor] = React.useState();
   const [loader, setLoader] = React.useState(false);
@@ -86,7 +88,7 @@ function App() {
           setLoader(false);
           setPercentage(0);
           myEditor.current.pasteHTML(
-            `<img name=${uRes.data.media_temp_id} src=${uRes.data.s3URL}> </img>`
+            `<img style='max-height:100px;max-width:100%;height:auto;width:auto;'  name=${uRes.data.media_temp_id} src=${uRes.data.s3URL}> </img>`
           );
         })
         .catch((err) => {
@@ -188,13 +190,13 @@ function App() {
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
         />
       </Helmet>
-      <input
+      {/* <input
         ref={picker}
-        accept="image"
+        accept="image/png, image/gif, image/jpeg, image/jpg"
         style={{ display: "none" }}
         type="file"
         onChange={onImageChange}
-      />
+      /> */}
       <Editor editor={editor} setEditor={setMyEditor} />
       {/* <img
         alt=""
@@ -206,24 +208,26 @@ function App() {
           });
         }}
       /> */}
-      {hideUpload === undefined ? (
-        <img
-          alt=""
-          className="imgupload"
-          src={uploadIcon}
-          onClick={(e) => {
-            if (type == "android") {
-              try {
-                /* eslint-disable */
-                JSBridge?.choosePhoto();
-              } catch (e) {}
-            } else {
-              e.preventDefault();
-              picker.current.click();
-            }
-          }}
-        />
-      ) : null}
+
+      {/* {hideUpload === undefined ? (
+        <button>
+          <SvgComponent
+            alt=""
+            className="imgupload"
+            src={uploadIcon}
+            onClick={(e) => {
+              if (type == "android") {
+                try {
+                  JSBridge?.choosePhoto();
+                } catch (e) {}
+              } else {
+                e.preventDefault();
+                picker.current.click();
+              }
+            }}
+          />
+        </button>
+      ) : null} */}
       <p className="txt-length"> {length}/500 </p>
 
       {loader && <ProgressBar className="loader" completed={percentage} />}

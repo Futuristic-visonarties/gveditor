@@ -12,7 +12,7 @@ const Article = ({ editor, setEditor }) => {
         const et = new MediumEditor(node, {
           placeholder: {
             text: "\n Enter your content",
-            hideOnClick: false,
+            hideOnClick: true,
           },
         });
         node.scrollTop = 0;
