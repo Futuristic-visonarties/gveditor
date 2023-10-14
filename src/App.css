@@ -58,3 +58,11 @@ html {
   bottom: -6px;
   font-size: 14px;
 }
+
+.green-txt {
+  color: green;
+}
+
+.red-txt {
+  color: red;
+}

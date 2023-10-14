@@ -228,7 +228,10 @@ function App() {
           />
         </button>
       ) : null} */}
-      <p className="txt-length"> {length}/500 </p>
+      <p className={`txt-length ${length >= 500 ? "green-txt" : "red-txt"}`}>
+        {" "}
+        {length}/500{" "}
+      </p>
 
       {loader && <ProgressBar className="loader" completed={percentage} />}
     </div>
